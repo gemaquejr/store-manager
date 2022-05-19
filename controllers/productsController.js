@@ -40,9 +40,21 @@ const updateProductsById = async (req, res) => {
   return res.status(200).json(products);
 };
 
+const deleteProductsById = async (req, res) => {
+  const { id } = req.params;
+  const products = await productsServices.deleteProductsById(id);
+
+  if (!products) {
+      return res.status(404).json({ message: 'Product not found' });
+  }
+
+  return res.status(204).json(products);
+};
+
 module.exports = {
   allProducts,
   findProductsById,
   insertProduct,
   updateProductsById,
+  deleteProductsById,
 };
