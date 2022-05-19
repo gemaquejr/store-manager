@@ -15,7 +15,15 @@ const findSalesById = async (id) => {
     return sale;
 };
 
+const insertSales = async (sold) => {
+    const saleId = await salesModels.insertSales();  
+    sold.filter(({ productId, quantity }) => (salesModels.allSales(saleId, productId, quantity)));
+
+    return { id: saleId, itemsSold: sold };
+  };
+
 module.exports = {
     allSales,
     findSalesById,
+    insertSales,
 };
