@@ -6,13 +6,7 @@ const productsServices = require('../../../services/productsServices');
 
 describe('Ao chamar o models allProducts', () => {
   describe('quando o payload informado não é válido', async () => {
-    const resultPayload = [
-        {
-            id: 100,
-            name: Pedrão,
-            quantity: 1
-        }
-    ]
+    const resultPayload = []
 
     beforeEach(() => {
         sinon.stub(saleModel, 'execute')
@@ -21,12 +15,6 @@ describe('Ao chamar o models allProducts', () => {
 
     afterEach(() => {
         saleModel.execute.restore();
-    });
-
-    it('é chamado o send com a mensagem "Dados inválidos"', async () => {
-        const result = await productsServices.allSales(request, response);
-
-      expect(result.send.calledWith('Dados inválidos')).to.be.equal(true);
     });
 
     it('retorna um array', async () => {

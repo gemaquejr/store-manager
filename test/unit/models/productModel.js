@@ -5,18 +5,13 @@ const productModel = require('../../../models/productModel');
 const connection = require('../../../models/connection');
 
 describe('Ao chamar o models allProducts', () => {
-  describe('quando o payload informado não é válido', async () => {
-    const resultPayload = [
-        {
-            id: 100,
-            name: Pedrão,
-            quantity: 1
-        }
-    ]
+  describe('quando o payload é vazio', () => {
+    const result = [[]]
+    const resultPayload = [];
 
     beforeEach(() => {
         sinon.stub(connection, 'execute')
-        .resolves([resultPayload]);
+        .resolves(result);
       });
 
     afterEach(() => {
@@ -30,8 +25,8 @@ describe('Ao chamar o models allProducts', () => {
     });
 
     it('retorna um array', async () => {
-       const result = await productModel.allProducts();  
-       expect(result[0]).to.be.an('array');
+       const result = await productModel.findProductsById(1);  
+       expect(result).to.deep.equal(resultPayload);
     });
 
     it('o array não está vazio', async () => {
