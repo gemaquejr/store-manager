@@ -22,8 +22,20 @@ const insertSales = async (sold) => {
     return { id: saleId, itemsSold: sold };
   };
 
+  const updateSalesById = async (id, sold) => {
+    const saleId = await salesModels.findSalesById(id);
+    if (saleId.length === 0) {
+        return false;
+    }
+  
+    sold.filter((sales) => (salesModels.updateSalesById(id, sales.productId, sales.quantity)));
+    
+    return { saleId: id, itemUpdated: sold };
+  };
+
 module.exports = {
     allSales,
     findSalesById,
     insertSales,
+    updateSalesById,
 };

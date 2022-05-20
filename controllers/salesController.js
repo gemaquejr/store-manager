@@ -24,8 +24,21 @@ const insertSales = async (req, res) => {
     return res.status(201).json(newSale);
   };
 
+  const updateSalesById = async (req, res) => {
+    const { id } = req.params;
+    const sales = req.body;
+    const updatedSale = await salesServices.updateSalesById(id, sales);
+  
+    if (!updatedSale) {
+        return res.status(404).json({ message: 'Sale not found' });
+    }
+  
+    return res.status(200).json(updatedSale);
+  };
+
 module.exports = {
     allSales,
     findSalesById,
     insertSales,
+    updateSalesById,
 };
