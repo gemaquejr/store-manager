@@ -3,6 +3,8 @@ const express = require('express');
 require('dotenv').config();
 const productsController = require('./controllers/productsController');
 const salesController = require('./controllers/salesController');
+const validateProducts = require('./middlewares/validateProducts');
+const validateSales = require('./middlewares/validateSales');
 
 const app = express();
 
@@ -15,13 +17,13 @@ app.get('/', (_request, response) => {
 
 app.get('/products', productsController.allProducts);
 app.get('/products/:id', productsController.findProductsById);
-app.post('/products', productsController.insertProduct);
-app.put('/products/:id', productsController.updateProductsById);
-app.delete('/products/:id', productsController.deleteProductsById);
+app.post('/products', validateProducts, productsController.insertProduct);
+app.put('/products/:id', validateProducts, productsController.updateProductsById);
+app.delete('/products/:id', validateProducts, productsController.deleteProductsById);
 app.get('/sales', salesController.allSales);
 app.get('/sales/:id', salesController.findSalesById);
-app.post('/sales', salesController.insertSales);
-app.put('/sales/:id', salesController.updateSalesById);
+app.post('/sales', validateSales, salesController.insertSales);
+app.put('/sales/:id', validateSales, salesController.updateSalesById);
 
 // não remova essa exportação, é para o avaliador funcionar
 // você pode registrar suas rotas normalmente, como o exemplo acima
