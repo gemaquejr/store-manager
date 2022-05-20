@@ -24,12 +24,6 @@ describe('Ao chamar o models allProducts', () => {
         productsServices.execute.restore();
     });
 
-    it('é chamado o send com a mensagem "Dados inválidos"', async () => {
-        const result = await productsController.allSales(request, response);
-
-      expect(result.send.calledWith('Dados inválidos')).to.be.equal(true);
-    });
-
     it('retorna um array', async () => {
        const result = await productsController.allSales();  
        expect(result[0]).to.be.an('array');
@@ -52,17 +46,6 @@ describe('Ao chamar o models allProducts', () => {
             'name',
             'quantity'
         );
-    });
-
-    it('é chamado o status com o código 200', async () => {
-        const result = await productsController.allSales(result);
-  
-        expect(result.status.calledWith(200)).to.be.equal(true);
-      });
-
-    it('é chamado o status com o código 201', async () => {
-      const result = await productsController.allSales();
-      expect(result.status.calledWith(201)).to.be.equal(true);
     });
   });
 });

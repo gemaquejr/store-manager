@@ -6,32 +6,33 @@ const connection = require('../../../models/connection');
 
 describe('Ao chamar o models allProducts', () => {
   describe('quando o payload informado não é válido', async () => {
+    const resolves = [[]]
     const resultPayload = []
 
     beforeEach(() => {
         sinon.stub(connection, 'execute')
-        .resolves([resultPayload]);
+        .resolves(resolves);
       });
 
     afterEach(() => {
         connection.execute.restore();
     });
 
-    it('é chamado o send com a mensagem "Dados inválidos"', async () => {
-        const result = await saleModel.allSales(request, response);
-
-      expect(result.send.calledWith('Dados inválidos')).to.be.equal(true);
-    });
+    it('tal objeto possui um "id" ', async () => {
+      const response = await saleModel.insertSales();
+    
+      expect(response).to.have.a.property('id')
+  });
 
     it('retorna um array', async () => {
       const result = await saleModel.findSalesById(1);  
       expect(result).to.deep.equal(resultPayload);
    });
 
-    it('o array não está vazio', async () => {
-        const result = await saleModel.allSales();  
-        expect(result).to.be.not.empty;
-    });
+   it('o array não está vazio', async () => {
+    const result = await saleModel.allSales();  
+    expect(result).to.deep.equal(resultPayload);
+});
 
     it('o array possui objetos', async () => {
         const [result] = await saleModel.allSales();  
@@ -45,17 +46,6 @@ describe('Ao chamar o models allProducts', () => {
             'name',
             'quantity'
         );
-    });
-
-    it('é chamado o status com o código 200', async () => {
-        const result = await saleModel.allSales(result);
-  
-        expect(result.status.calledWith(200)).to.be.equal(true);
-      });
-
-    it('é chamado o status com o código 201', async () => {
-      const result = await saleModel.allSales();
-      expect(result.status.calledWith(201)).to.be.equal(true);
     });
   });
 });

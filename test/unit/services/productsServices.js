@@ -18,14 +18,14 @@ describe('Ao chamar o models allProducts', () => {
     });
 
     it('retorna um array', async () => {
-       const result = await productsServices.allSales();  
-       expect(result[0]).to.be.an('array');
-    });
+      const result = await productsServices.findSalesById(1);  
+      expect(result).to.deep.equal(resultPayload);
+   });
 
-    it('o array não está vazio', async () => {
-        const result = await productsServices.allSales();  
-        expect(result).to.be.not.empty;
-    });
+   it('o array não está vazio', async () => {
+    const result = await productsServices.allProducts();  
+    expect(result).to.deep.equal(resultPayload);
+});
 
     it('o array possui objetos', async () => {
         const [result] = await productsServices.allSales();  
@@ -39,17 +39,6 @@ describe('Ao chamar o models allProducts', () => {
             'name',
             'quantity'
         );
-    });
-
-    it('é chamado o status com o código 200', async () => {
-        const result = await productsServices.allSales(result);
-  
-        expect(result.status.calledWith(200)).to.be.equal(true);
-      });
-
-    it('é chamado o status com o código 201', async () => {
-      const result = await productsServices.allSales();
-      expect(result.status.calledWith(201)).to.be.equal(true);
     });
   });
 });

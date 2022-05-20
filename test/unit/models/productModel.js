@@ -6,22 +6,22 @@ const connection = require('../../../models/connection');
 
 describe('Ao chamar o models allProducts', () => {
   describe('quando o payload é vazio', () => {
-    const result = [[]]
+    const resolve = [[]]
     const resultPayload = [];
 
     beforeEach(() => {
         sinon.stub(connection, 'execute')
-        .resolves(result);
+        .resolves(resolve);
       });
 
     afterEach(() => {
         connection.execute.restore();
     });
 
-    it('é chamado o send com a mensagem "Dados inválidos"', async () => {
-        const result = await productModel.allProducts(request, response);
-
-      expect(result.send.calledWith('Dados inválidos')).to.be.equal(true);
+    it('tal objeto possui um "id" ', async () => {
+        const response = await productModel.insertProduct();
+      
+        expect(response).to.have.a.property('id')
     });
 
     it('retorna um array', async () => {
@@ -31,7 +31,7 @@ describe('Ao chamar o models allProducts', () => {
 
     it('o array não está vazio', async () => {
         const result = await productModel.allProducts();  
-        expect(result).to.be.not.empty;
+        expect(result).to.deep.equal(resultPayload);
     });
 
     it('o array possui objetos', async () => {
@@ -46,17 +46,6 @@ describe('Ao chamar o models allProducts', () => {
             'name',
             'quantity'
         );
-    });
-
-    it('é chamado o status com o código 200', async () => {
-        const result = await productModel.allProducts(result);
-  
-        expect(result.status.calledWith(200)).to.be.equal(true);
-      });
-
-    it('é chamado o status com o código 201', async () => {
-      const result = await productModel.allProducts();
-      expect(result.status.calledWith(201)).to.be.equal(true);
     });
   });
 });

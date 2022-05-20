@@ -6,11 +6,11 @@ const salesServices = require('../../../services/salesServices');
 
 describe('Ao chamar o models allProducts', () => {
   describe('quando o payload informado não é válido', async () => {
-    const resultPayload = []
+    const resultPayload = [[]]
 
     beforeEach(() => {
         sinon.stub(saleModel, 'execute')
-        .resolves([resultPayload]);
+        .resolves(resultPayload);
       });
 
     afterEach(() => {
@@ -18,9 +18,9 @@ describe('Ao chamar o models allProducts', () => {
     });
 
     it('retorna um array', async () => {
-       const result = await salesServices.allSales();  
-       expect(result[0]).to.be.an('array');
-    });
+      const result = await salesServices.findSalesById(1);  
+      expect(result).to.deep.equal(resultPayload);
+   });
 
     it('o array não está vazio', async () => {
         const result = await salesServices.allSales();  
@@ -39,17 +39,6 @@ describe('Ao chamar o models allProducts', () => {
             'name',
             'quantity'
         );
-    });
-
-    it('é chamado o status com o código 200', async () => {
-        const result = await salesServices.allSales(result);
-  
-        expect(result.status.calledWith(200)).to.be.equal(true);
-      });
-
-    it('é chamado o status com o código 201', async () => {
-      const result = await salesServices.allSales();
-      expect(result.status.calledWith(201)).to.be.equal(true);
     });
   });
 });
