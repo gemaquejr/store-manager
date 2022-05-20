@@ -1,4 +1,4 @@
-const validateSales = (req, res) => {
+const validateSales = (req, res, next) => {
     req.body.forEach((sale) => {
         const { productId, quantity } = sale;
 
@@ -19,6 +19,7 @@ const validateSales = (req, res) => {
             .json({ message: '"quantity" must be greater than or equal to 1' });
         }
     });
+    return next();
 };
 
 module.exports = validateSales;

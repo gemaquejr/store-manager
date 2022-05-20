@@ -1,4 +1,4 @@
-const validateProducts = (req, res) => {
+const validateProducts = (req, res, next) => {
     const { name, quantity } = req.body;
 
         if (!name) {
@@ -18,6 +18,7 @@ const validateProducts = (req, res) => {
             return res.status(422)
             .json({ message: '"quantity" must be greater than or equal to 1' });
         }
+        return next();
 };
 
 module.exports = validateProducts;

@@ -19,7 +19,7 @@ app.get('/products', productsController.allProducts);
 app.get('/products/:id', productsController.findProductsById);
 app.post('/products', validateProducts, productsController.insertProduct);
 app.put('/products/:id', validateProducts, productsController.updateProductsById);
-app.delete('/products/:id', validateProducts, productsController.deleteProductsById);
+app.delete('/products/:id', productsController.deleteProductsById);
 app.get('/sales', salesController.allSales);
 app.get('/sales/:id', salesController.findSalesById);
 app.post('/sales', validateSales, salesController.insertSales);

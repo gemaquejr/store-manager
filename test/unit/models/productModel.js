@@ -63,6 +63,5 @@ describe('Ao chamar o models allProducts', () => {
       const result = await productModel.allProducts();
       expect(result.status.calledWith(201)).to.be.equal(true);
     });
-    
   });
 });
