@@ -6,7 +6,17 @@ const salesServices = require('../../../services/salesServices');
 
 describe('Ao chamar o models allProducts', () => {
   describe('quando o payload informado não é válido', async () => {
-    const resultPayload = [[]]
+    const resolves = [[]]
+    const resultPayload = []
+
+    beforeEach(() => {
+        sinon.stub(saleModel, 'execute')
+        .resolves(resolves);
+      });
+
+    afterEach(() => {
+      saleModel.execute.restore();
+    });
 
     beforeEach(() => {
         sinon.stub(saleModel, 'execute')

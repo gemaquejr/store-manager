@@ -33,9 +33,20 @@ const insertSales = async (sold) => {
     return { saleId: id, itemUpdated: sold };
   };
 
+  const deleteSalesById = async (id) => {
+    const saleId = await salesModels.findSalesById(id);
+    if (saleId.length === 0) {
+        return false;
+    }
+  
+    const deletedSale = await salesModels.deleteSalesById(id);
+    return deletedSale;
+  };
+
 module.exports = {
     allSales,
     findSalesById,
     insertSales,
     updateSalesById,
+    deleteSalesById,
 };
