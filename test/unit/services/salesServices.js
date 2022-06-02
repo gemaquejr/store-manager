@@ -1,54 +1,97 @@
 const sinon = require('sinon');
 const { expect } = require('chai');
 
+const productsMock = require("../mocks/productsMock");
 const saleModel = require('../../../models/saleModel');
 const salesServices = require('../../../services/salesServices');
+// const productModel = require('../../../models/productModel');
 
-describe('Ao chamar o models allProducts', () => {
-  describe('quando o payload informado não é válido', async () => {
-    const resolves = [[]]
-    const resultPayload = []
+describe("services", () => {
+  describe("salesServices", () => {
+    describe("#allSales", () => {
+      describe("Quando a tabela `product` não tiver dados !", () => {
+        beforeEach(() => {
+          sinon.stub(saleModel, 'allSales').resolves(productsMock.empty);
+        });
 
-    beforeEach(() => {
-        sinon.stub(saleModel, 'execute')
-        .resolves(resolves);
+        afterEach(() => {
+          saleModel.allSales.restore();
+        });
+
+        it("retorna um array vazio", async () => {
+          const products = await salesServices.allSales();
+          expect(products).to.be.deep.equal(productsMock.empty);
+        });
+      });
+    });
+    
+    describe("Quando a tabela `product` tiver dados !", () => {
+      beforeEach(() => {
+        sinon.stub(saleModel, "allSales").resolves(productsMock.full);
       });
 
-    afterEach(() => {
-      saleModel.execute.restore();
-    });
-
-    beforeEach(() => {
-        sinon.stub(saleModel, 'execute')
-        .resolves(resultPayload);
+      afterEach(() => {
+        saleModel.allSales.restore();
       });
 
-    afterEach(() => {
-        saleModel.execute.restore();
+      it('retorna um array', () => async () => {
+        const response = await salesServices.allSales( );
+        expect(response).to.be.an('array');
+      })
+
+      it("o objeto que está no array possui os elementos esperados", async () => {
+        const products = await salesServices.allSales();
+        expect(products).to.be.deep.equal(productsMock.full);
+      });
     });
 
-    it('retorna um array', async () => {
-      const result = await salesServices.findSalesById(1);  
-      expect(result).to.deep.equal(resultPayload);
-   });
+    describe("#findSalesById", () => {
+      describe("Quando a tabela `product` não tiver dados !", () => {
+        beforeEach(() => {
+          sinon.stub(saleModel, 'findSalesById').resolves([productsMock.empty]);
+        });
 
-    it('o array não está vazio', async () => {
-        const result = await salesServices.allSales();  
-        expect(result).to.be.not.empty;
+        afterEach(() => {
+          saleModel.findSalesById.restore();
+        });
+
+        it("retorna um array vazio", async () => {
+          const products = await salesServices.findSalesById();
+          expect(products).to.be.deep.equal([productsMock.empty]);
+        });
+      });
+        
+    describe("Quando a tabela `product` tiver dados !", () => {
+      beforeEach(() => {
+        sinon.stub(saleModel, "findSalesById").resolves(productsMock.full);
+      });
+
+      afterEach(() => {
+        saleModel.findSalesById.restore();
+      });
+
+      it("o objeto que está no array possui os elementos esperados", async () => {
+        const products = await salesServices.findSalesById();
+        expect(products).to.be.deep.equal(productsMock.full);
+      });
     });
 
-    it('o array possui objetos', async () => {
-        const [result] = await salesServices.allSales();  
-        expect(result).to.be.an('object');
+  describe('inserindo vendas', () => { 
+    const id = 1;  
+    before(async () => {
+      sinon.stub(saleModel, 'insertSales').resolves(id);
+    })
+  
+    after(async () => {
+      saleModel.insertSales.restore();
     });
-
-    it('o objeto que está no array possui os atributos id, name, quantity', async () => {
-        const [result] = await salesServices.allSales();  
-        expect(result).to.be.includes.all.keys(
-            'id',
-            'name',
-            'quantity'
-        );
-    });
-  });
-});
+  
+    it('retorna um objeto', async () => {
+      const response = await salesServices.insertSales(productsMock.sale);
+  
+      expect(response).to.be.an('object');
+    })
+  })
+})
+})
+})

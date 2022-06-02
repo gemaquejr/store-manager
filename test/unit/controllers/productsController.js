@@ -1,51 +1,123 @@
 const sinon = require('sinon');
 const { expect } = require('chai');
 
+const productsMock = require("../mocks/productsMock");
 const productsServices = require('../../../services/productsServices');
 const productsController = require('../../../controllers/productsController');
 
 
-describe('Ao chamar o models allProducts', () => {
-  describe('quando o payload informado não é válido', async () => {
-    const resultPayload = [
-        {
-            id: 100,
-            name: Pedrão,
-            quantity: 1
-        }
-    ]
+describe("services", () => {
+  describe("productsController", () => {
+    describe("#allProducts", () => {
+      describe("Quando a tabela `product` não tiver dados !", () => {
+        const req = {};
+        const res = {};
 
-    beforeEach(() => {
-        sinon.stub(productsServices, 'execute')
-        .resolves([resultPayload]);
+        beforeEach(() => {
+          res.status = sinon.stub().returns(res);
+          res.json = sinon.stub().returns();
+
+          sinon.stub(productsServices, 'allProducts').resolves(productsMock.empty)
+        });
+
+        afterEach(() => {
+          productsServices.allProducts.restore();
+        });
+
+        it("deve chamar a função `res.status` com o valor 200", async () => {
+          await productsController.allProducts(req, res);
+          expect(res.status.calledWith(200)).to.be.true;
+        });
+
+        it("deve chamar a função `res.json` com um array vazio", async () => {
+          await productsController.allProducts(req, res);
+          expect(res.json.calledWith(productsMock.empty)).to.be.true;
+        });
       });
 
-    afterEach(() => {
-        productsServices.execute.restore();
-    });
+      describe("Quando a tabela `product` tiver dados !", () => {
+        const req = {};
+        const res = {};
 
-    it('retorna um array', async () => {
-       const result = await productsController.allSales();  
-       expect(result[0]).to.be.an('array');
-    });
+        beforeEach(() => {
+          res.status = sinon.stub().returns(res);
+          res.json = sinon.stub().returns();
 
-    it('o array não está vazio', async () => {
-        const result = await productsController.allSales();  
-        expect(result).to.be.not.empty;
-    });
+          sinon.stub(productsServices, 'allProducts').resolves(productsMock.full)
+        });
 
-    it('o array possui objetos', async () => {
-        const [result] = await productsController.allSales();  
-        expect(result).to.be.an('object');
-    });
+        afterEach(() => {
+          productsServices.allProducts.restore();
+        });
 
-    it('o objeto que está no array possui os atributos id, name, quantity', async () => {
-        const [result] = await productsController.allSales();  
-        expect(result).to.be.includes.all.keys(
-            'id',
-            'name',
-            'quantity'
-        );
+        it("deve chamar `res.status` com o valor 200", async () => {
+          await productsController.allProducts(req, res);
+          expect(res.status.calledWith(200)).to.be.true;
+        });
+
+        it("deve chamar a função `res.json` com os elementos esperados", async () => {
+          await productsController.allProducts(req, res);
+          expect(res.json.calledWith(productsMock.full)).to.be.true;
+        });
+      });
+      });
+      
+      describe("#insertProduct", () => {
+        const req = {};
+        const res = {};
+        
+        beforeEach(() => {
+          const { name, quantity } = productsMock
+          req.body = { name, quantity };
+
+          res.status = sinon.stub().returns(res);
+          res.json = sinon.stub().returns();
+
+          sinon.stub(productsServices, 'insertProduct').resolves(productsMock)
+        });
+
+        afterEach(() => {
+          productsServices.insertProduct.restore();
+        });
+
+        it('deve chamar `res.status` com o valor de 201', async () => {
+          await productsController.insertProduct(req, res);
+          expect(res.status.calledWith(201)).to.be.true;
+        });
+
+        it('deve chamar `res.jason` com o objeto cadastrado', async () => {
+          await productsController.insertProduct(req, res);
+          expect(res.json.calledWith(productsMock)).to.be.true;
+        });
+      })
+
+      describe("#findProductsById", () => {
+        const req = {};
+        const res = {};
+        
+        beforeEach(() => {
+          const { id } = productsMock
+          req.params = { id };
+
+          res.status = sinon.stub().returns(res);
+          res.json = sinon.stub().returns();
+
+          sinon.stub(productsServices, 'findProductsById').resolves(productsMock)
+        });
+
+        afterEach(() => {
+          productsServices.findProductsById.restore();
+        });
+
+        it('deve chamar `res.status` com o valor de 200', async () => {
+          await productsController.findProductsById(req, res);
+          expect(res.status.calledWith(200)).to.be.true;
+        });
+
+        it('deve chamar `res.jason` com o objeto cadastrado', async () => {
+          await productsController.findProductsById(req, res);
+          expect(res.json.calledWith(productsMock)).to.be.true;
+        });
+      })
     });
   });
-});

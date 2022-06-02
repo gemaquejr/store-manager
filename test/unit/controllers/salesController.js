@@ -1,51 +1,122 @@
-const sinon = require('sinon');
-const { expect } = require('chai');
+const sinon = require("sinon");
+const { expect } = require("chai");
 
-const salesServices = require('../../../services/salesServices');
-const salesController = require('../../../controllers/salesController');
+const productsMock = require("../mocks/productsMock");
+const salesServices = require("../../../services/salesServices");
+const salesController = require("../../../controllers/salesController");
 
+describe("controllers", () => {
+  describe("salesController", () => {
+    describe("#allSales", () => {
+      describe("Quando a tabela `product` não tiver dados !", () => {
+        const req = {};
+        const res = {};
 
-describe('Ao chamar o models allProducts', () => {
-  describe('quando o payload informado não é válido', async () => {
-    const resultPayload = [
-        {
-            id: 100,
-            name: Pedrão,
-            quantity: 1
-        }
-    ]
+        beforeEach(() => {
+          res.status = sinon.stub().returns(res);
+          res.json = sinon.stub().returns();
 
-    beforeEach(() => {
-        sinon.stub(salesServices, 'execute')
-        .resolves([resultPayload]);
+          sinon.stub(salesServices, "allSales").resolves(productsMock.empty);
+        });
+
+        afterEach(() => {
+          salesServices.allSales.restore();
+        });
+
+        it("deve chamar a função `res.status` com o valor 200", async () => {
+          await salesController.allSales(req, res);
+          expect(res.status.calledWith(200)).to.be.true;
+        });
+
+        it("deve chamar a função `res.json` com um array vazio", async () => {
+          await salesController.allSales(req, res);
+          expect(res.json.calledWith(productsMock.empty)).to.be.true;
+        });
       });
 
-    afterEach(() => {
-        salesServices.execute.restore();
-    });
+      describe("Quando a tabela `product` tiver dados !", () => {
+        const req = {};
+        const res = {};
 
-    it('retorna um array', async () => {
-       const result = await salesController.allSales();  
-       expect(result[0]).to.be.an('array');
-    });
+        beforeEach(() => {
+          res.status = sinon.stub().returns(res);
+          res.json = sinon.stub().returns();
 
-    it('o array não está vazio', async () => {
-        const result = await salesController.allSales();  
-        expect(result).to.be.not.empty;
-    });
+          sinon.stub(salesServices, "allSales").resolves(productsMock.full);
+        });
 
-    it('o array possui objetos', async () => {
-        const [result] = await salesController.allSales();  
-        expect(result).to.be.an('object');
-    });
+        afterEach(() => {
+          salesServices.allSales.restore();
+        });
 
-    it('o objeto que está no array possui os atributos id, name, quantity', async () => {
-        const [result] = await salesController.allSales();  
-        expect(result).to.be.includes.all.keys(
-            'id',
-            'name',
-            'quantity'
-        );
+        it("deve chamar `res.status` com o valor 200", async () => {
+          await salesController.allSales(req, res);
+          expect(res.status.calledWith(200)).to.be.true;
+        });
+
+        it("deve chamar a função `res.json` com os elementos esperados", async () => {
+          await salesController.allSales(req, res);
+          expect(res.json.calledWith(productsMock.full)).to.be.true;
+        });
+      });
+
+      describe("#insertSales", () => {
+        const req = {};
+        const res = {};
+
+        beforeEach(() => {
+          const { name, quantity } = productsMock;
+          req.body = { name, quantity };
+
+          res.status = sinon.stub().returns(res);
+          res.json = sinon.stub().returns();
+
+          sinon.stub(salesServices, "insertSales").resolves(productsMock);
+        });
+
+        afterEach(() => {
+          salesServices.insertSales.restore();
+        });
+
+        it("deve chamar `res.status` com o valor de 201", async () => {
+          await salesController.insertSales(req, res);
+          expect(res.status.calledWith(201)).to.be.true;
+        });
+
+        it("deve chamar `res.jason` com o objeto cadastrado", async () => {
+          await salesController.insertSales(req, res);
+          expect(res.json.calledWith(productsMock)).to.be.true;
+        });
+      });
+
+      describe("#findSalesById", () => {
+        const req = {};
+        const res = {};
+        
+        beforeEach(() => {
+          const { id } = productsMock
+          req.params = { id };
+
+          res.status = sinon.stub().returns(res);
+          res.json = sinon.stub().returns();
+
+          sinon.stub(salesServices, "findSalesById").resolves(productsMock);
+        });
+
+        afterEach(() => {
+          salesServices.findSalesById.restore();
+        });
+
+        it('deve chamar `res.status` com o valor de 200', async () => {
+          await salesController.findSalesById(req, res);
+          expect(res.status.calledWith(200)).to.be.true;
+        });
+
+        it('deve chamar `res.jason` com o objeto cadastrado', async () => {
+          await salesController.findSalesById(req, res);
+          expect(res.json.calledWith(productsMock)).to.be.true;
+        });
+      })
     });
   });
 });

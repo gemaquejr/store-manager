@@ -5,6 +5,7 @@ const allSales = async () => {
     sp.product_id AS productId, sp.quantity AS quantity FROM StoreManager.sales_products
     AS sp JOIN StoreManager.sales AS sa ON sa.id = sp.sale_id`);
 
+    console.log(sales);
     return sales;
 };
 

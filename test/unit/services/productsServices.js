@@ -1,54 +1,117 @@
-const sinon = require('sinon');
-const { expect } = require('chai');
+const sinon = require("sinon");
+const { expect } = require("chai");
 
-const saleModel = require('../../../models/saleModel');
-const productsServices = require('../../../services/productsServices');
+const productsMock = require("../mocks/productsMock");
+const productModel = require("../../../models/productModel");
+const productsServices = require("../../../services/productsServices");
 
-describe('Ao chamar o models allProducts', () => {
-  describe('quando o payload informado não é válido', async () => {
-    const resolves = [[]]
-    const resultPayload = []
+describe("services", () => {
+  describe("productsServices", () => {
+    describe("#allProducts", () => {
+      describe("Quando a tabela `product` não tiver dados !", () => {
+        beforeEach(() => {
+          sinon.stub(productModel, "allProducts").resolves(productsMock.empty);
+        });
 
-    beforeEach(() => {
-        sinon.stub(connection, 'execute')
-        .resolves(resolves);
+        afterEach(() => {
+          productModel.allProducts.restore();
+        });
+
+        it("retorna um array vazio", async () => {
+          const products = await productsServices.allProducts();
+          expect(products).to.be.deep.equal(productsMock.empty);
+        });
       });
 
-    afterEach(() => {
-        connection.execute.restore();
-    });
+      describe("Quando a tabela `product` tiver dados !", () => {
+        beforeEach(() => {
+          sinon.stub(productModel, "allProducts").resolves(productsMock.full);
+        });
 
-    beforeEach(() => {
-        sinon.stub(saleModel, 'execute')
-        .resolves([resultPayload]);
+        afterEach(() => {
+          productModel.allProducts.restore();
+        });
+        
+        it('retorna um array', () => async () => {
+          const response = await productsServices.allProducts( );
+          expect(response).to.be.an('array');
+        })
+
+        it("o objeto que está no array possui os elementos esperados", async () => {
+          const products = await productsServices.allProducts();
+          expect(products).to.be.deep.equal(productsMock.full);
+        });
       });
 
-    afterEach(() => {
-        saleModel.execute.restore();
-    });
+      describe("#findProductsById", () => {
+        describe("Quando a tabela `product` não tiver dados !", () => {
+          beforeEach(() => {
+            sinon.stub(productModel, "findProductsById").resolves([productsMock.empty]);
+          });
+  
+          afterEach(() => {
+            productModel.findProductsById.restore();
+          });
+  
+          it("retorna um array vazio", async () => {
+            const products = await productsServices.findProductsById();
+            expect(products).to.be.equal(productsMock.empty);
+          });
+        });
+  
+        describe("Quando a tabela `product` tiver dados !", () => {
+          beforeEach(() => {
+            sinon.stub(productModel, "findProductsById").resolves([productsMock.full]);
+          });
+  
+          afterEach(() => {
+            productModel.findProductsById.restore();
+          });
+  
+          it("o objeto que está no array possui os elementos esperados", async () => {
+            const products = await productsServices.findProductsById();
+            expect(products).to.be.deep.equal(productsMock.full);
+          });
+        });
 
-    it('retorna um array', async () => {
-      const result = await productsServices.findSalesById(1);  
-      expect(result).to.deep.equal(resultPayload);
-   });
-
-   it('o array não está vazio', async () => {
-    const result = await productsServices.allProducts();  
-    expect(result).to.deep.equal(resultPayload);
-});
-
-    it('o array possui objetos', async () => {
-        const [result] = await productsServices.allSales();  
-        expect(result).to.be.an('object');
-    });
-
-    it('o objeto que está no array possui os atributos id, name, quantity', async () => {
-        const [result] = await productsServices.allSales();  
-        expect(result).to.be.includes.all.keys(
-            'id',
-            'name',
-            'quantity'
-        );
+        describe("#insertProduct", () => {
+          describe("Quando a tabela `product` não tiver dados !", () => {
+            beforeEach(() => {
+              sinon.stub(productModel, "sameNameProduct").resolves(productsMock.empty);
+              sinon.stub(productModel, "insertProduct").resolves(productsMock.full);
+            });
+    
+            afterEach(() => {
+              productModel.insertProduct.restore();
+            });
+    
+            it("retorna um array vazio", async () => {
+              const products = await productModel.sameNameProduct();
+              expect(products).to.be.deep.equal(productsMock.empty);
+            });
+          });
+    
+          describe("Quando a tabela `product` tiver dados !", () => {
+            beforeEach(() => {
+              sinon.stub(productModel, "insertProduct").resolves(productsMock.full);
+            });
+    
+            afterEach(() => {
+              productModel.insertProduct.restore();
+            });
+            
+            it('retorna um array', () => async () => {
+              const response = await productsServices.insertProduct( );
+              expect(response).to.be.an('array');
+            })
+    
+            it("o objeto que está no array possui os elementos esperados", async () => {
+              const products = await productsServices.insertProduct();
+              expect(products).to.be.deep.equal(productsMock.full);
+            });
+          });
     });
   });
+});
+});
 });
