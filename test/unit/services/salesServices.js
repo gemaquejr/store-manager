@@ -4,7 +4,6 @@ const { expect } = require('chai');
 const productsMock = require("../mocks/productsMock");
 const saleModel = require('../../../models/saleModel');
 const salesServices = require('../../../services/salesServices');
-// const productModel = require('../../../models/productModel');
 
 describe("services", () => {
   describe("salesServices", () => {

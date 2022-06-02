@@ -110,8 +110,46 @@ describe("services", () => {
               expect(products).to.be.deep.equal(productsMock.full);
             });
           });
+
+          describe("#updateProductsById", () => {
+            describe("Quando a tabela `product` não tiver dados !", () => {
+              beforeEach(() => {
+                sinon.stub(productModel, "findProductsById").resolves(productsMock.full);
+                sinon.stub(productModel, "updateProductsById").resolves(productsMock.empty);
+              });
+      
+              afterEach(() => {
+                productModel.updateProductsById.restore();
+              });
+      
+              it("retorna um array vazio", async () => {
+                const products = await productsServices.updateProductsById();
+                expect(products).to.be.deep.equal(productsMock.empty);
+              });
+            });
+      
+            describe("Quando a tabela `product` tiver dados !", () => {
+              beforeEach(() => {
+                sinon.stub(productModel, "updateProductsById").resolves(productsMock.full);
+              });
+      
+              afterEach(() => {
+                productModel.updateProductsById.restore();
+              });
+              
+              it('retorna um array', () => async () => {
+                const response = await productsServices.updateProductsById( );
+                expect(response).to.be.an('array');
+              })
+      
+              it("o objeto que está no array possui os elementos esperados", async () => {
+                const products = await productsServices.updateProductsById();
+                expect(products).to.be.deep.equal(productsMock.full);
+              });
+            });
     });
   });
+});
 });
 });
 });

@@ -119,5 +119,36 @@ describe("services", () => {
           expect(res.json.calledWith(productsMock)).to.be.true;
         });
       })
+
+      describe("#updateProductsById", () => {
+        const req = {};
+        const res = {};
+        
+        beforeEach(() => {
+          const { id } = productsMock
+          const { name, quantity } = productsMock
+          req.params = { id };
+          req.body = { name, quantity };
+
+          res.status = sinon.stub().returns(res);
+          res.json = sinon.stub().returns();
+
+          sinon.stub(productsServices, 'updateProductsById').resolves(productsMock)
+        });
+
+        afterEach(() => {
+          productsServices.updateProductsById.restore();
+        });
+
+        it('deve chamar `res.status` com o valor de 200', async () => {
+          await productsController.updateProductsById(req, res);
+          expect(res.status.calledWith(200)).to.be.true;
+        });
+
+        it('deve chamar `res.jason` com o objeto cadastrado', async () => {
+          await productsController.updateProductsById(req, res);
+          expect(res.json.calledWith(productsMock)).to.be.true;
+        });
+      })
     });
   });

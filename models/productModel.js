@@ -8,7 +8,6 @@ const allProducts = async () => {
 
 const findProductsById = async (id) => {
     const [product] = await connection.execute('SELECT * FROM products WHERE id = ?', [id]);
-    console.log(product);
 
     return product;
 };
