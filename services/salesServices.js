@@ -1,4 +1,5 @@
 const salesModels = require('../models/saleModel');
+const productModel = require('../models/productModel');
 
 const allSales = async () => {
     const sales = await salesModels.allSales();
@@ -15,11 +16,25 @@ const findSalesById = async (id) => {
     return sale;
 };
 
-const insertSales = async (sold) => {
-    const saleId = await salesModels.insertSales();  
-    sold.filter(({ productId, quantity }) => (salesModels.allSales(saleId, productId, quantity)));
+const removeQuantity = (sold) => { 
+    sold.filter(({ productId, quantity }) => (productModel.removeQuantity(quantity, productId))); 
+};
 
-    return { id: saleId, itemsSold: sold };
+const addQuantity = (sold) => { 
+    sold.filter(({ productId, quantity }) => (productModel.addQuantity(quantity, productId)));
+  };
+
+  // Ajuda na monitoria de Thiago Paz com debug
+
+const insertSales = async (sold) => {
+    const saleId = await salesModels.insertSales();
+    console.log(saleId);  
+    sold.filter(({ productId, quantity }) => (salesModels
+        .insertSaleProduct(saleId.insertId, productId, quantity)));
+
+    removeQuantity(sold);
+
+    return { id: saleId.insertId, itemsSold: sold };
   };
 
   const updateSalesById = async (id, sold) => {
@@ -34,14 +49,18 @@ const insertSales = async (sold) => {
   };
 
   const deleteSalesById = async (id) => {
+      console.log(id);
     const saleId = await salesModels.findSalesById(id);
+    console.log(saleId);
     if (saleId.length === 0) {
         return false;
     }
-  
+
+    addQuantity(saleId);
+    
     const deletedSale = await salesModels.deleteSalesById(id);
     return deletedSale;
-  };
+};
 
 module.exports = {
     allSales,

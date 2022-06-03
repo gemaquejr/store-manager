@@ -21,9 +21,9 @@ const sameNameProduct = async (name) => {
 const insertProduct = async (name, quantity) => {
   const [product] = await connection.execute(`INSERT INTO StoreManager.products
   (name, quantity) VALUES (?, ?)`, [name, quantity]);
-
+  
   const newProduct = { id: product.insertId, name, quantity };
-
+  
   return newProduct;
 };
 
@@ -42,6 +42,20 @@ const deleteProductsById = async (id) => {
   return product;
 };
 
+const addQuantity = async (id, quantity) => {
+  const [product] = await connection.execute(`UPDATE StoreManager.products
+  SET quantity = quantity + ? WHERE id = ?`, [id, quantity]);
+
+  return product;
+};
+
+const removeQuantity = async (id, quantity) => {
+  const [product] = await connection.execute(`UPDATE StoreManager.products
+  SET quantity = quantity - ? WHERE id = ?`, [id, quantity]);
+
+  return product;
+};
+
 module.exports = {
   allProducts,
   findProductsById,
@@ -49,5 +63,6 @@ module.exports = {
   sameNameProduct,
   updateProductsById,
   deleteProductsById,
-  
+  addQuantity,
+  removeQuantity,
 };
