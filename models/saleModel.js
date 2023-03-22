@@ -1,56 +1,65 @@
 const connection = require('./connection');
 
-const allSales = async () => {
-    const [sales] = await connection.execute(`SELECT sp.sale_id AS saleId, sa.date AS date,
-    sp.product_id AS productId, sp.quantity AS quantity FROM StoreManager.sales_products
-    AS sp JOIN StoreManager.sales AS sa ON sa.id = sp.sale_id`);
-
-    return sales;
+const getSales = async () => {
+  const query = `SELECT SP.sale_id AS saleId, 
+  SA.date, SP.product_id AS productId, SP.quantity FROM StoreManager.sales_products AS SP 
+  JOIN StoreManager.sales AS SA ON SA.id = SP.sale_id;`;
+   const [sales] = await connection.execute(query);
+   return sales;
 };
 
-const findSalesById = async (id) => {
-    const [sale] = await connection.execute(`SELECT sa.date AS date,
-    sp.product_id AS productId, sp.quantity AS quantity FROM StoreManager.sales_products
-    AS sp JOIN StoreManager.sales AS sa ON sa.id = sp.sale_id WHERE sp.sale_id = ?`, [id]);
-
-    return sale;
+const getSalesById = async (id) => {
+   const query = `SELECT SA.date, 
+   SP.product_id AS productId, SP.quantity FROM StoreManager.sales_products AS SP
+   JOIN StoreManager.sales AS SA ON SA.id = SP.sale_id WHERE SA.id =?`;
+   const [searchSales] = await connection.execute(query, [id]);
+   return searchSales;
 };
 
-const insertSales = async () => {
-    const [sales] = await connection.execute(`INSERT INTO StoreManager.sales
-    (date) VALUES (CURRENT_TIMESTAMP())`);  
-  
-    return sales;
-  };
+const createSales = async (date) => {
+   const query = `INSERT INTO StoreManager.sales
+   (date) VALUES (?)`;
+   const [create] = await connection.execute(query, [date]);
+   return {
+       id: create.insertId,
+     };
+};
 
-  const insertSaleProduct = async (saleId, productId, quantity) => {
-    const [sales] = await connection.execute(`INSERT INTO StoreManager.sales_products
-    (sale_id, product_id, quantity) VALUES (?, ?, ?)`, [saleId, productId, quantity]);
-  
-    return sales;
-  };
+const createSalesProducers = async (saleid, productid, quantity) => {
+   const query = `INSERT INTO StoreManager.sales_products 
+   (sale_id, product_id, quantity) VALUES (?, ?, ?)`;
+   const [create] = await connection.execute(query, [saleid, productid, quantity]);
+   return {
+       id: create.insertId,
+     };
+};
 
-  const updateSalesById = async (saleId, productId, quantity) => {
-    const [sales] = await connection.execute(`UPDATE StoreManager.sales_products
-    SET product_id = ?, quantity = ? WHERE sale_id = ?`, [productId, quantity, saleId]);
+const getSalesAndProducts = async (id) => {
+   const query = `SELECT product_id AS productId, quantity FROM StoreManager.sales_products 
+   WHERE sale_id = ? ORDER BY productId`;
+   const [searchSales] = await connection.execute(query, [id]);
+   return searchSales;
+};
 
-    const updatedSale = { productId, quantity, id: sales.saleId };
+const updateSales = async (saleid, productId, quantity) => {
+   const query = `UPDATE StoreManager.sales_products 
+   SET quantity = ? WHERE sale_id = ? AND product_id = ?`;
+   const [updateSale] = await connection.execute(query, [quantity, saleid, productId]);
+   return updateSale;
+ };
 
-    return updatedSale;
-  };
+ const deleteSales = async (id) => {
+   const query = 'DELETE FROM StoreManager.sales WHERE id = ?';
+   const [deleteSale] = await connection.execute(query, [id]);
+   return deleteSale;
+ };
 
-  const deleteSalesById = async (id) => {
-    const [sales] = await connection.execute(
-      'DELETE FROM StoreManager.sales WHERE id = ?', [id],
-);
-return sales;
-  };
-  
 module.exports = {
-    allSales,
-    findSalesById,
-    insertSales,
-    insertSaleProduct,
-    updateSalesById,
-    deleteSalesById,
+   getSales,
+   getSalesById,
+   createSales,
+   createSalesProducers,
+   getSalesAndProducts,
+   updateSales,
+   deleteSales,
 };
