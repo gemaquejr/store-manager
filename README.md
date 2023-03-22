@@ -2,7 +2,7 @@
 
 Essa aplicação é uma API RESTful de gerenciamentos de vendas em MySQL.
 
-![preview](.github/preview.gif)
+![preview](.github/preview.png)
 
 Aplicação que consiste em desenvolver uma API RESTful de gerenciamentos de vendas, onde é possível cadastrar, visualizar, pesquisar, editar e excluir informações.
 
@@ -46,14 +46,14 @@ O projeto foi para praticar a construção de API's RESTful em CRUD, utilizando 
 
 ## :hammer_and_wrench: Antes de iniciar o projeto.
 
-No diretório do projeto, instale as dependências e inicialize o projeto:
+No diretório do projeto, inicialize o projeto e instale as dependências:
+
+### `Rodando a aplicação com o Docker:`
+
+Na pasta app do projeto, suba o container store_manager utilizando o docker-compose.yml. Utilize o comando:
+
+   - `docker-compose up -d`
 
 ### `npm install`
 
 Instala as dependências.
-
-### `Rodando a aplicação com o Docker:`
-
-Na pasta app do projeto, suba o container talker_manager utilizando o docker-compose.yml. Utilize o comando:
-
-   - `docker-compose up -d`
