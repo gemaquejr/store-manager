@@ -1,68 +1,53 @@
 const connection = require('./connection');
 
-const allProducts = async () => {
-    const [product] = await connection.execute('SELECT * FROM products');
-
-    return product;
+const getProducts = async () => {
+  const query = 'SELECT * FROM StoreManager.products ORDER BY id';
+  const [products] = await connection.execute(query);
+  return products;
 };
 
-const findProductsById = async (id) => {
-    const [product] = await connection.execute('SELECT * FROM products WHERE id = ?', [id]);
-
-    return product;
+const getProductsById = async (id) => {
+  const query = 'SELECT * FROM StoreManager.products WHERE id = ?';
+  const [searchProducts] = await connection.execute(query, [id]);
+  return searchProducts;
 };
 
-const sameNameProduct = async (name) => {
-  const [product] = await connection.execute('SELECT * FROM products WHERE name = ?', [name]);
-
-  return product;
+const createProducts = async (name, quantity) => {
+  const query = `INSERT INTO StoreManager.products 
+  (name, quantity) VALUES (?, ?)`;
+  const [createProduct] = await connection.execute(query, [name, quantity]);
+  return {
+      id: createProduct.insertId,
+    };
 };
 
-const insertProduct = async (name, quantity) => {
-  const [product] = await connection.execute(`INSERT INTO StoreManager.products
-  (name, quantity) VALUES (?, ?)`, [name, quantity]);
-  
-  const newProduct = { id: product.insertId, name, quantity };
-  
-  return newProduct;
+const updateProducts = async (id, name, quantity) => {
+  const query = 'UPDATE StoreManager.products SET name = ?, quantity = ? WHERE id = ?';
+  const [updateProduct] = await connection.execute(query, [name, quantity, id]);
+  return updateProduct;
 };
-
-const updateProductsById = async ({ id, name, quantity }) => {
-  const [product] = await connection.execute(`UPDATE StoreManager.products
-  SET name = ?, quantity = ? WHERE id = ?`, [id, name, quantity]);
-
-  const updatedProduct = { id: product.insertId, name, quantity };
-
-  return updatedProduct;
+const deleteProducts = async (id) => {
+  const query = 'DELETE FROM StoreManager.products WHERE id = ?';
+  const [updateProduct] = await connection.execute(query, [id]);
+  return updateProduct;
 };
-
-const deleteProductsById = async (id) => {
-  const [product] = await connection.execute('DELETE FROM products WHERE id = ?', [id]);
-
-  return product;
+const updateProductsQuantityCreate = async (id, quantity) => {
+  const query = 'UPDATE StoreManager.products SET quantity = quantity - ? WHERE id = ?';
+  const [updateProduct] = await connection.execute(query, [quantity, id]);
+  return updateProduct;
 };
-
-const addQuantity = async (id, quantity) => {
-  const [product] = await connection.execute(`UPDATE StoreManager.products
-  SET quantity = quantity + ? WHERE id = ?`, [id, quantity]);
-
-  return product;
-};
-
-const removeQuantity = async (id, quantity) => {
-  const [product] = await connection.execute(`UPDATE StoreManager.products
-  SET quantity = quantity - ? WHERE id = ?`, [id, quantity]);
-
-  return product;
+const updateProductsQuantityDelete = async (id, quantity) => {
+  const query = 'UPDATE StoreManager.products SET quantity = quantity + ? WHERE id = ?';
+  const [updateProduct] = await connection.execute(query, [quantity, id]);
+  return updateProduct;
 };
 
 module.exports = {
-  allProducts,
-  findProductsById,
-  insertProduct,
-  sameNameProduct,
-  updateProductsById,
-  deleteProductsById,
-  addQuantity,
-  removeQuantity,
+  getProducts,
+  getProductsById,
+  createProducts,
+  updateProducts,
+  deleteProducts,
+  updateProductsQuantityCreate,
+  updateProductsQuantityDelete,
 };
