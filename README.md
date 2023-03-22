@@ -4,9 +4,9 @@ Essa aplicação é uma API RESTful de gerenciamentos de vendas em MySQL.
 
 ![preview](.github/preview.gif)
 
-Aplicação que consiste em desenvolver uma API de gerenciamentos de vendas, onde é possível cadastrar, visualizar, pesquisar, editar e excluir informações.
+Aplicação que consiste em desenvolver uma API RESTful de gerenciamentos de vendas, onde é possível cadastrar, visualizar, pesquisar, editar e excluir informações.
 
-O projeto foi para praticar a construção de API's em CRUD, utilizando endpoints para ler e escrever arquivos em MySQL, além do framework Mocha e das bibliotecas Chai e Sinon.JS para criar os testes unitários..
+O projeto foi para praticar a construção de API's RESTful em CRUD, utilizando endpoints para ler e escrever arquivos em MySQL, além do framework Mocha e das bibliotecas Chai e Sinon.JS para criar os testes unitários..
 
 ## 🚀 Tecnologia
 
