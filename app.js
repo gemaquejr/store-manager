@@ -1,30 +1,22 @@
-// app.js contruído na monitoria do Rafael Carvalho
 const express = require('express');
-require('dotenv').config();
-const productsController = require('./controllers/productsController');
-const salesController = require('./controllers/salesController');
-const validateProducts = require('./middlewares/validateProducts');
-const validateSales = require('./middlewares/validateSales');
+const bodyParser = require('body-parser');
+
+const routeProduct = require('./routes/routeProduct');
+const routeSales = require('./routes/routeSales');
+
+const err = require('./middlewares/middlewareError');
 
 const app = express();
 
-app.use(express.json());
-
+app.use(bodyParser.json());
 // não remova esse endpoint, é para o avaliador funcionar
 app.get('/', (_request, response) => {
   response.send();
 });
 
-app.get('/products', productsController.allProducts);
-app.get('/products/:id', productsController.findProductsById);
-app.post('/products', validateProducts, productsController.insertProduct);
-app.put('/products/:id', validateProducts, productsController.updateProductsById);
-app.delete('/products/:id', productsController.deleteProductsById);
-app.get('/sales', salesController.allSales);
-app.get('/sales/:id', salesController.findSalesById);
-app.post('/sales', validateSales, salesController.insertSales);
-app.put('/sales/:id', validateSales, salesController.updateSalesById);
-app.delete('/sales/:id', salesController.deleteSalesById);
+app.use('/products', routeProduct);
+app.use('/sales', routeSales);
+app.use(err.error);
 
 // não remova essa exportação, é para o avaliador funcionar
 // você pode registrar suas rotas normalmente, como o exemplo acima
