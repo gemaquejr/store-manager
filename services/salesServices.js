@@ -1,71 +1,81 @@
 const salesModels = require('../models/saleModel');
 const productModel = require('../models/productModel');
 
-const allSales = async () => {
-    const sales = await salesModels.allSales();
+const productsServices = require('./productsServices');
 
+const objError = {
+    error: 404,
+    message: 'Sale not found',
+};
+const objErrorSales = {
+    error: 422,
+    message: 'Such amount is not permitted to sell',
+};
+const getSalesServices = async () => {
+    const sales = await salesModels.getSales();
     return sales;
 };
 
-const findSalesById = async (id) => {
-    const sale = await salesModels.findSalesById(id);
-    if (sale.length === 0) {
-        return false;
-    }
-
-    return sale;
+const getSalesByIdServices = async (id) => {
+    const salesID = await salesModels.getSalesById(id);
+    if (salesID.length < 1) throw objError;
+    return salesID;
 };
 
-const removeQuantity = (sold) => { 
-    sold.filter(({ productId, quantity }) => (productModel.removeQuantity(quantity, productId))); 
+const verificProducts = async (data) => {
+    const verifcproduct = await Promise.all((data.map(async (e) => {
+        const [teste] = await productModel.getProductsById(e.productId);
+        if (teste.quantity - e.quantity >= 0) return true;
+        throw objErrorSales;
+    })));
+    return verifcproduct;
 };
 
-const addQuantity = (sold) => { 
-    sold.filter(({ productId, quantity }) => (productModel.addQuantity(quantity, productId)));
-  };
+const createSales = async (data) => {
+    await verificProducts(data);
+    const datanow = '2022-05-10 22:20:10'; // mokei uma data qualquer
+    const sales = await salesModels.createSales(datanow);
+    await data.forEach(async (e) => {
+        salesModels.createSalesProducers(sales.id, e.productId, e.quantity);
+    });
+    await productsServices.updateQuantiProducts(data);
+    const getsales = await salesModels.getSalesAndProducts(sales.id);
+    if (getsales.length < 1) throw objError;
+    const ojb = {
+        id: sales.id,
+        itemsSold: getsales,
+    };
+    return ojb;
+};
 
-  // Ajuda na monitoria de Thiago Paz com debug
+const updateSales = async (data, id) => {
+    const salesID = await salesModels.getSalesById(id);
+    await data.forEach(async (e) => {
+        await salesModels.updateSales(id, e.productId, e.quantity);
+        await productsServices.updateQuantiProductsDelete(salesID);
+    });
+    const obj = {
+        saleId: id,
+        itemUpdated: data,
+    };
+    return obj;
+};
 
-const insertSales = async (sold) => {
-    const saleId = await salesModels.insertSales();
-    console.log(saleId);  
-    sold.filter(({ productId, quantity }) => (salesModels
-        .insertSaleProduct(saleId.insertId, productId, quantity)));
-
-    removeQuantity(sold);
-
-    return { id: saleId.insertId, itemsSold: sold };
-  };
-
-  const updateSalesById = async (id, sold) => {
-    const saleId = await salesModels.findSalesById(id);
-    if (saleId.length === 0) {
-        return false;
+const validDelete = async (id) => {
+    const salesID = await salesModels.getSalesById(id);
+    if (salesID.length > 0) {
+        await salesModels.deleteSales(id);
+        await productsServices.updateQuantiProductsDelete(salesID);
+        return true;
     }
-  
-    sold.filter((sales) => (salesModels.updateSalesById(id, sales.productId, sales.quantity)));
-    
-    return { saleId: id, itemUpdated: sold };
-  };
-
-  const deleteSalesById = async (id) => {
-      console.log(id);
-    const saleId = await salesModels.findSalesById(id);
-    console.log(saleId);
-    if (saleId.length === 0) {
-        return false;
-    }
-
-    addQuantity(saleId);
-    
-    const deletedSale = await salesModels.deleteSalesById(id);
-    return deletedSale;
+    throw objError;
 };
 
 module.exports = {
-    allSales,
-    findSalesById,
-    insertSales,
-    updateSalesById,
-    deleteSalesById,
+    getSalesServices,
+    getSalesByIdServices,
+    createSales,
+    updateSales,
+    validDelete,
+    verificProducts,
 };
