@@ -1,56 +1,52 @@
 const salesServices = require('../services/salesServices');
 
-const allSales = async (_req, res) => {
-    const sales = await salesServices.allSales();
 
+const getSalesControler = async (_req, res) => {
+    const sales = await salesServices.getSalesServices();
     return res.status(200).json(sales);
 };
 
-const findSalesById = async (req, res) => {
-    const { id } = req.params;
-    const sales = await salesServices.findSalesById(id);
-
-    if (!sales) {
-        return res.status(404).json({ message: 'Sale not found' });
-    }
-
-    return res.status(200).json(sales);
+const getSalesIdControler = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const salesId = await salesServices.getSalesByIdServices(id);
+        return res.status(200).json(salesId);
+    } catch (err) {
+         return res.status(err.error).json({ message: err.message });
+        }
 };
 
-const insertSales = async (req, res) => {
-    const sales = req.body;
-    const newSale = await salesServices.insertSales(sales);
-  
-    return res.status(201).json(newSale);
-  };
+const createSales = async (req, res) => {
+    try {
+        const data = req.body;
+        const salesId = await salesServices.createSales(data);
+        return res.status(201).json(salesId);
+    } catch (err) {
+         return res.status(err.error).json({ message: err.message });
+        }
+};
 
-  const updateSalesById = async (req, res) => {
-    const { id } = req.params;
-    const sales = req.body;
-    const updatedSale = await salesServices.updateSalesById(id, sales);
-  
-    if (!updatedSale) {
-        return res.status(404).json({ message: 'Sale not found' });
-    }
-  
-    return res.status(200).json(updatedSale);
-  };
+const updateSales = async (req, res) => {
+        const data = req.body;
+        const { id } = req.params;
+        const updatesale = await salesServices.updateSales(data, id);
+        return res.status(200).json(updatesale);
+};
 
-  const deleteSalesById = async (req, res) => {
+const deleteSales = async (req, res) => {
+    try {
     const { id } = req.params;
-    const sale = await salesServices.deleteSalesById(id);
-  
-    if (!sale) {
-        return res.status(404).json({ message: 'Sale not found' });
+    await salesServices.validDelete(id);
+    return res.status(204).send();
+    } catch (err) {
+     return res.status(err.error).json({ message: err.message });
     }
-  
-    return res.status(204).end();
-  };
+};
 
 module.exports = {
-    allSales,
-    findSalesById,
-    insertSales,
-    updateSalesById,
-    deleteSalesById,
+    getSalesControler,
+    getSalesIdControler,
+    createSales,
+    updateSales,
+    deleteSales,
 };
