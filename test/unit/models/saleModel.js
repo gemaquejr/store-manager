@@ -1,89 +1,285 @@
 const sinon = require('sinon');
 const { expect } = require('chai');
 
-const productsMock = require("../mocks/productsMock");
 const saleModel = require('../../../models/saleModel');
 const connection = require('../../../models/connection');
 
-describe("models", () => {
-  describe("saleModel", () => {
-    describe("#allSales", () => {
-      describe("Quando a tabela `sales` não tiver dados !", () => {
-        beforeEach(() => {
-          sinon.stub(connection, "execute").resolves([productsMock.empty]);
-        });
-
-        afterEach(() => {
+describe('Busca todos as vendas no BD', () => {
+  describe('quando não existe nenhuma venda', () => {
+      const result = [[]];
+      before(() => {
+          sinon.stub(connection, 'execute').resolves(result);
+      })
+      after(() => {
           connection.execute.restore();
-        });
+      })
+      it('retorna um array', async () => {
+          const result = await saleModel.getSales();
+          expect(result).to.be.an('array');
+      })
+      it('o array está vazio', async () => {
+          const result = await saleModel.getSales();
+          expect(result).to.be.empty;
+      })
+  })
+  describe('quando existe vendas no meu banco', () => {
+   const result = [
+      {
+          saleId: 1,
+          date: "2022-05-07T01:12:42.000Z",
+          productId: 1,
+          quantity: 5
+      },
+   ]
+   before(() => {
+      sinon.stub(connection, 'execute').resolves([result]);
+   })
+   after(() => {
+       connection.execute.restore();
+   })
+   it('retorna um array', async () => {
+      const result = await saleModel.getSales();
+      expect(result).to.be.an('array');
+   })
+   it('o array não esta vazio', async () => {
+      const result = await saleModel.getSales();
+      expect(result).to.be.not.empty;
+    })
+    it('o array possui objetos', async () => {
+      const [result] = await saleModel.getSales();
+      expect(result).to.be.an('object');
+    })
+    it('o objeto que esta no array contem os atributos saleId, date, productId, quantity', async () => {
+      const [result] = await saleModel.getSales();
+      expect(result).to.be.includes.all.keys(
+        'saleId',
+        'date',
+        'productId',
+        'quantity'
+      )
+    })
+  })
+})
 
-        it("retorna um array vazio", async () => {
-          const sales = await saleModel.allSales();
-          expect(sales).to.be.deep.equal(productsMock.empty);
-        });
-      });
-
-      describe("Quando a tabela `sales` tiver dados !", () => {
-        beforeEach(() => {
-          sinon.stub(connection, "execute").resolves([productsMock.full]);
-        });
-
-        afterEach(() => {
+describe('Busca uma venda por ID especifico', () => {
+  describe('Quando não existe a venda com o ID especificado', () => {
+      const result = [[]];
+      const id = 20;
+      before(() => {
+          sinon.stub(connection, 'execute').resolves(result);
+      })
+      after(() => {
           connection.execute.restore();
-        });
+      })
+      it('retorna um array', async () => {
+          const result = await saleModel.getSalesById(id);
+          expect(result).to.be.an('array');
+      })
+      it('o array está vazio', async () => {
+          const result = await saleModel.getSalesById(id);
+          expect(result).to.be.empty;
+      })
+  })
 
-        it("o objeto que está no array possui os elementos esperados", async () => {
-          const sales = await saleModel.allSales();
-          expect(sales).to.be.deep.equal(productsMock.full);
-        });
-      });
-    });
-    describe("#insertSales", () => {
-      beforeEach(() => {
-        sinon.stub(connection, "execute").resolves([ productsMock.inserted ]);
-      });
+  describe('Quando existe a venda com ID no meu banco', () => {
+      const saleId = 1;
+      const result = [
+          {
+              saleId: 1,
+              date: "2022-05-07T01:12:42.000Z",
+              productId: 1,
+              quantity: 5
+          },
+       ]
+      before(() => {
+         sinon.stub(connection, 'execute').resolves([result]);
+      })
+      after(() => {
+          connection.execute.restore();
+      })
+      it('retorna um array', async () => {
+         const result = await saleModel.getSalesById(saleId);
+         expect(result).to.be.an('array');
+      })
+      it('o array não esta vazio', async () => {
+         const result = await saleModel.getSalesById(saleId);
+         expect(result).to.be.not.empty;
+       })
+       it('o array possui objetos', async () => {
+         const [result] = await saleModel.getSalesById(saleId);
+         expect(result).to.be.an('object');
+       })
+       it('o objeto que esta no array contem os atributos saleId, date, productId, quantity', async () => {
+          const [result] = await saleModel.getSalesById(saleId);
+          expect(result).to.be.includes.all.keys(
+            'saleId',
+            'date',
+            'productId',
+            'quantity'
+          )
+        })
+     })
+})
 
-      afterEach(() => {
-        connection.execute.restore();
-      });
+describe("Testando a funcao createSales", () => {
+  const resultObj = 
+  {
+      id: 1,
+      itemsSold: [
+        {
+          productId: 1,
+          quantity: 3
+        }
+      ]
+    }
 
-      it("retorna o objeto com os atributos id, name, quantity", async () => {
-        const { id, name, quantity } = productsMock.inserted;
-        const sales = await saleModel.insertSales( id, name, quantity );
-        expect(sales).to.be.deep.equal(productsMock.inserted);
-      });
+
+  before(() => {
+    const execute = [{ id: 1 }];
+
+    sinon.stub(connection, "execute").resolves(execute);
   });
 
-  describe("#findSalesById", () => {
-    describe("Quando a tabela `product` não tiver dados !", () => {
-      beforeEach(() => {
-        sinon.stub(connection, "execute").resolves([productsMock.empty]);
-      });
+  after(() => {
+    connection.execute.restore();
+  });
 
-      afterEach(() => {
-        connection.execute.restore();
-      });
+  describe("quando a venda é inserido com sucesso", async () => {
+    it("retorna um objeto", async () => {
+      const result = await saleModel.createSalesProducers(resultObj);
 
-      it("retorna um array vazio", async () => {
-        const products = await saleModel.findSalesById();
-        expect(products).to.be.equal(productsMock.empty);
-      });
+      expect(result).to.be.a("object");
     });
 
-    describe("Quando a tabela `product` tiver dados !", () => {
-      beforeEach(() => {
-        sinon.stub(connection, "execute").resolves([productsMock.full]);
-      });
-
-      afterEach(() => {
-        connection.execute.restore();
-      });
-
-      it("o objeto que está no array possui os elementos esperados", async () => {
-        const products = await saleModel.findSalesById();
-        expect(products).to.be.deep.equal(productsMock.full);
-      });
+    it('tal objeto possui o "id" do novo filme inserido', async () => {
+      const result = await saleModel.createSalesProducers(resultObj);
+      expect(result).to.have.a.property("id");
     });
+  });
 });
+
+describe("Testando a funcao createSalesProducers", () => {
+  const resultObj = 
+  {
+      id: 1,
+      itemsSold: [
+        {
+          productId: 1,
+          quantity: 3
+        }
+      ]
+    }
+
+
+  before(() => {
+    const execute = [{ id: 1 }];
+
+    sinon.stub(connection, "execute").resolves(execute);
+  });
+
+  after(() => {
+    connection.execute.restore();
+  });
+
+  describe("quando a venda é inserido com sucesso", async () => {
+    it("retorna um objeto", async () => {
+      const result = await saleModel.createSales(resultObj);
+
+      expect(result).to.be.a("object");
+    });
+
+    it('tal objeto possui o "id" do novo filme inserido', async () => {
+      const result = await saleModel.createSales(resultObj);
+      expect(result).to.have.a.property("id");
+    });
+  });
+});
+
+describe("Testando a funcao getSalesAndProducts", () => {
+  const resultObj = 
+  {
+      id: 1, 
+    }
+
+  before(() => {
+    const execute = [{ id: 1 }];
+
+    sinon.stub(connection, "execute").resolves(execute);
+  });
+
+  after(() => {
+    connection.execute.restore();
+  });
+
+  describe("quando a venda é inserido com sucesso", async () => {
+    it("retorna um objeto", async () => {
+      const result = await saleModel.getSalesAndProducts(resultObj.id);
+
+      expect(result).to.be.a("object");
+    });
+
+    it('tal objeto possui o "id" do novo filme inserido', async () => {
+      const result = await saleModel.getSalesAndProducts(resultObj);
+      expect(result).to.have.a.property("id");
+    });
+  });
+});
+
+describe("Testando a funcao updateSales", () => {
+  const resultObj = 
+  {
+      id: 1, 
+    }
+
+  before(() => {
+    const execute = [{ id: 1 }];
+
+    sinon.stub(connection, "execute").resolves(execute);
+  });
+
+  after(() => {
+    connection.execute.restore();
+  });
+
+  describe("quando a venda é inserido com sucesso", async () => {
+    it("retorna um objeto", async () => {
+      const result = await saleModel.updateSales(resultObj.id);
+
+      expect(result).to.be.a("object");
+    });
+
+    it('tal objeto possui o "id" do novo filme inserido', async () => {
+      const result = await saleModel.updateSales(resultObj);
+      expect(result).to.have.a.property("id");
+    });
+  });
+});
+
+describe("deleta uma venda no BD", () => {
+const resultObj = 1;
+const resultUpdate = [[]]
+
+before(() => {
+  const execute = resultUpdate;
+
+  sinon.stub(connection, "execute").resolves([execute]);
+});
+
+after(() => {
+  connection.execute.restore();
+});
+
+describe("quando o produto é deletado com sucesso", async () => {
+  it("retorna um objeto", async () => {
+    const [result] = await saleModel.deleteSales(resultObj);
+
+    expect(result).to.be.a("array");
+  });
+
+  it('tal produto não possui o "name"', async () => {
+    const [result] = await saleModel.deleteSales(resultObj);
+
+    expect(result).to.have.not.property("name");
+  });
 });
 });
