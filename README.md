@@ -18,6 +18,12 @@ O projeto foi para praticar a construção de API's RESTful em CRUD, utilizando 
 
 - ⚡ MySQL Workbench é uma ferramenta de design de banco de dados visual que integra desenvolvimento SQL, administração, design de banco de dados, criação     e manutenção em um único ambiente de desenvolvimento integrado para o sistema de banco de dados MySQL.
 
+- ⚡ Mocha é uma estrutura de teste JavaScript para programas Node.js
+
+- ⚡ Chai é uma biblioteca de afirmação BDD/TDD para Node e para o navegador, que pode ser equiparada com qualquer framework de testes de JavaScript.
+
+- ⚡ Sinon é uma biblioteca que fornece diversas funcionalidades (como mocks, spies e stubs) que facilitam os desenvolvimentos de testes no JavaScript.
+
 ## ✋🏻 Pré-requisitos
 
 - [git](https://git-scm.com/downloads): Ferramenta para gerenciar o código-fonte
@@ -32,6 +38,12 @@ O projeto foi para praticar a construção de API's RESTful em CRUD, utilizando 
 
 - [MySQL Workbench](https://www.mysql.com/products/workbench/): MySQL é uma ferramenta de design de banco de dados visual que integra desenvolvimento       SQL, administração, design de banco de dados, criação e manutenção em um único ambiente de desenvolvimento integrado para o sistema de banco de dados     MySQL.
 
+- [Mocha] (https://mochajs.org/): Mocha é um framework Javascript que roda em aplicações Node.js e no browser para realizar testes assíncronos de uma       maneira simples e fácil.
+
+- [Chai] (https://www.chaijs.com/): Chai é uma biblioteca de afirmação BDD/TDD para Node e para o navegador, que pode ser equiparada com qualquer           framework de testes de JavaScript.
+
+- [Sinon] (https://sinonjs.org/): Sinon é uma biblioteca que fornece diversas funcionalidades (como mocks, spies e stubs) que facilitam os                 desenvolvimentos de testes no JavaScript
+
 ## :hammer_and_wrench: Antes de iniciar o projeto.
 
 No diretório do projeto, instale as dependências e inicialize o projeto:
@@ -45,11 +57,3 @@ Instala as dependências.
 Na pasta app do projeto, suba o container talker_manager utilizando o docker-compose.yml. Utilize o comando:
 
    - `docker-compose up -d`
-
-Entre no terminal do container e digite:
-
-   - `docker exec -it talker_manager bash`
-   
-Inicie o servidor:
-
-   - `npm run dev`
