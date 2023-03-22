@@ -1,60 +1,60 @@
 const productsServices = require('../services/productsServices');
 
-const allProducts = async (_req, res) => {
-    const products = await productsServices.allProducts();
-
-    return res.status(200).json(products);
+const getProductsControler = async (_req, res) => {
+  const products = await productsServices.getProductsServices();
+  res.status(200).json(products);
 };
 
-const findProductsById = async (req, res) => {
-    const { id } = req.params;
-    const products = await productsServices.findProductsById(id);
-
-    if (!products) {
-        return res.status(404).json({ message: 'Product not found' });
-    }
-
-    return res.status(200).json(products);
-};
-
-const insertProduct = async (req, res) => {
-  const { name, quantity } = req.body;
-  const products = await productsServices.insertProduct(name, quantity);
-
-  if (!products) {
-      return res.status(409).json({ message: 'Product already exists' });
+const getProductsIdControler = async (req, res) => {
+  try {
+      const { id } = req.params;
+      const [productsId] = await productsServices.getProductsByIdServices(id);
+      return res.status(200).json(productsId);  
+  } catch (err) {
+      return res.status(err.error).json({ message: err.message });
   }
-
-  return res.status(201).json(products);
 };
 
-const updateProductsById = async (req, res) => {
+const registerProduct = async (req, res) => {
+  try {
+  const { name, quantity } = req.body;
+  const register = await productsServices.validCreate(name, quantity);
+  const ojbProduct = {
+      id: register.id,
+      name, 
+      quantity,
+  };
+ return res.status(201).json(ojbProduct);
+ } catch (err) {
+  return res.status(err.error).json({ message: err.message });
+ }
+};
+
+const updateProduct = async (req, res) => {
+  try {
   const { id } = req.params;
   const { name, quantity } = req.body;
-  const products = await productsServices.updateProductsById(id, name, quantity);
-
-  if (!products) {
-      return res.status(404).json({ message: 'Product not found' });
+  const uptade = await productsServices.validUpdate(id, name, quantity);
+  return res.status(200).json(uptade);
+  } catch (err) {
+      return res.status(err.error).json({ message: err.message });
   }
-
-  return res.status(200).json(products);
 };
 
-const deleteProductsById = async (req, res) => {
+const deleteProduct = async (req, res) => {
+  try {
   const { id } = req.params;
-  const products = await productsServices.deleteProductsById(id);
-
-  if (!products) {
-      return res.status(404).json({ message: 'Product not found' });
+  await productsServices.validDelete(id);
+  return res.status(204).send();
+  } catch (err) {
+   return res.status(err.error).json({ message: err.message });
   }
-
-  return res.status(204).json(products);
 };
 
 module.exports = {
-  allProducts,
-  findProductsById,
-  insertProduct,
-  updateProductsById,
-  deleteProductsById,
+  getProductsControler,
+  getProductsIdControler,
+  registerProduct,
+  updateProduct,
+  deleteProduct,
 };
