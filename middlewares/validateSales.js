@@ -1,25 +1,36 @@
-const validateSales = (req, res, next) => {
-    req.body.forEach((sale) => {
-        const { productId, quantity } = sale;
-
-        if (!productId) {
-            return res.status(400).json({ message: '"productId" is required' });
+const validUndefinedSales = (req, _res, next) => {
+    const data = req.body;
+    data.forEach((e) => {
+        if (e.productId === undefined) {
+           return next({ statusCode: 400, 
+               message: '"productId" is required' });
         }
-
-        if (!quantity) {
-            return res.status(400).json({ message: '"quantity" is required' });
-        }
-
-        if (!Number.isInteger(quantity)) {
-            return res.status(422).json({ message: '"quantity" must be integer' });
-        }
-
-        if (quantity < 1) {
-            return res.status(422)
-            .json({ message: '"quantity" must be greater than or equal to 1' });
+        if (e.quantity === undefined) {
+            return next({ statusCode: 400, message: '"quantity" is required' });
         }
     });
-    return next();
-};
+    next();
+ };
 
-module.exports = validateSales;
+ const validQuantityLengthSales = (req, res, next) => {
+   const data = req.body;
+   data.forEach((e) => {
+       if (e.quantity <= 0) {
+           return next({ statusCode: 422, 
+               message: '"quantity" must be greater than or equal to 1' });
+       }
+   });
+   next();
+ };
+
+ function isNum(val) {
+   if (val > 0 || val < 0) return true;
+   return false;
+ }
+
+module.exports = {
+   validUndefinedSales,
+   validQuantityLengthSales,
+   // erro,
+   isNum,
+};
