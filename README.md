@@ -38,11 +38,11 @@ O projeto foi para praticar a construção de API's RESTful em CRUD, utilizando 
 
 - [MySQL Workbench](https://www.mysql.com/products/workbench/): MySQL é uma ferramenta de design de banco de dados visual que integra desenvolvimento       SQL, administração, design de banco de dados, criação e manutenção em um único ambiente de desenvolvimento integrado para o sistema de banco de dados     MySQL.
 
-- [Mocha] (https://mochajs.org/): Mocha é um framework Javascript que roda em aplicações Node.js e no browser para realizar testes assíncronos de uma       maneira simples e fácil.
+- [Mocha](https://mochajs.org/): Mocha é um framework Javascript que roda em aplicações Node.js e no browser para realizar testes assíncronos de uma       maneira simples e fácil.
 
-- [Chai] (https://www.chaijs.com/): Chai é uma biblioteca de afirmação BDD/TDD para Node e para o navegador, que pode ser equiparada com qualquer           framework de testes de JavaScript.
+- [Chai](https://www.chaijs.com/): Chai é uma biblioteca de afirmação BDD/TDD para Node e para o navegador, que pode ser equiparada com qualquer           framework de testes de JavaScript.
 
-- [Sinon] (https://sinonjs.org/): Sinon é uma biblioteca que fornece diversas funcionalidades (como mocks, spies e stubs) que facilitam os                 desenvolvimentos de testes no JavaScript
+- [Sinon](https://sinonjs.org/): Sinon é uma biblioteca que fornece diversas funcionalidades (como mocks, spies e stubs) que facilitam os                   desenvolvimentos de testes no JavaScript.
 
 ## :hammer_and_wrench: Antes de iniciar o projeto.
 
