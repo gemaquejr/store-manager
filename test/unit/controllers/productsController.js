@@ -1,154 +1,300 @@
 const sinon = require('sinon');
 const { expect } = require('chai');
 
-const productsMock = require("../mocks/productsMock");
 const productsServices = require('../../../services/productsServices');
 const productsController = require('../../../controllers/productsController');
 
+describe('Chamada do controller getProductsControler', () => {
+  describe('Quando não existem produtos no banco', () => {
+    const response = {}
+    const request = {}
 
-describe("services", () => {
-  describe("productsController", () => {
-    describe("#allProducts", () => {
-      describe("Quando a tabela `product` não tiver dados !", () => {
-        const req = {};
-        const res = {};
+    before(() => {
+      response.status = sinon.stub().returns(response);
+      response.json = sinon.stub().returns();
 
-        beforeEach(() => {
-          res.status = sinon.stub().returns(res);
-          res.json = sinon.stub().returns();
+      sinon.stub(productsServices, 'getProductsServices').resolves([]);
+    })
 
-          sinon.stub(productsServices, 'allProducts').resolves(productsMock.empty)
-        });
+    after(() => {
+      productsServices.getProductsServices.restore();
+    })
 
-        afterEach(() => {
-          productsServices.allProducts.restore();
-        });
+    it('é retornado o metodo "status" passando o codigo 200', async () => {
+      await productsController.getProductsControler(request, response)
 
-        it("deve chamar a função `res.status` com o valor 200", async () => {
-          await productsController.allProducts(req, res);
-          expect(res.status.calledWith(200)).to.be.true;
-        });
+      expect(response.status.calledWith(200)).to.be.equal(true);
+    })
 
-        it("deve chamar a função `res.json` com um array vazio", async () => {
-          await productsController.allProducts(req, res);
-          expect(res.json.calledWith(productsMock.empty)).to.be.true;
-        });
-      });
+    it('é retornado o metodo json contendo um array', async () => {
+      await productsController.getProductsControler(request, response)
 
-      describe("Quando a tabela `product` tiver dados !", () => {
-        const req = {};
-        const res = {};
+      expect(response.json.calledWith(sinon.match.array)).to.be.equal(true);
+    })
+  })
 
-        beforeEach(() => {
-          res.status = sinon.stub().returns(res);
-          res.json = sinon.stub().returns();
+  describe('quando existem produtos no banco de dados', async () => {
+    const response = {};
+    const request = {};
 
-          sinon.stub(productsServices, 'allProducts').resolves(productsMock.full)
-        });
+    const productsMock = [
+    {
+      id: '1',
+      name: 'Martelo de Thor',
+      quantity: 10,
+    }
+    ]
+    before(() => {
+      response.status = sinon.stub()
+        .returns(response);
+      response.json = sinon.stub()
+        .returns();
 
-        afterEach(() => {
-          productsServices.allProducts.restore();
-        });
+      sinon.stub(productsServices, 'getProductsServices')
+        .resolves(productsMock);
+    })
 
-        it("deve chamar `res.status` com o valor 200", async () => {
-          await productsController.allProducts(req, res);
-          expect(res.status.calledWith(200)).to.be.true;
-        });
-
-        it("deve chamar a função `res.json` com os elementos esperados", async () => {
-          await productsController.allProducts(req, res);
-          expect(res.json.calledWith(productsMock.full)).to.be.true;
-        });
-      });
-      });
-      
-      describe("#insertProduct", () => {
-        const req = {};
-        const res = {};
-        
-        beforeEach(() => {
-          const { name, quantity } = productsMock
-          req.body = { name, quantity };
-
-          res.status = sinon.stub().returns(res);
-          res.json = sinon.stub().returns();
-
-          sinon.stub(productsServices, 'insertProduct').resolves(productsMock)
-        });
-
-        afterEach(() => {
-          productsServices.insertProduct.restore();
-        });
-
-        it('deve chamar `res.status` com o valor de 201', async () => {
-          await productsController.insertProduct(req, res);
-          expect(res.status.calledWith(201)).to.be.true;
-        });
-
-        it('deve chamar `res.jason` com o objeto cadastrado', async () => {
-          await productsController.insertProduct(req, res);
-          expect(res.json.calledWith(productsMock)).to.be.true;
-        });
-      })
-
-      describe("#findProductsById", () => {
-        const req = {};
-        const res = {};
-        
-        beforeEach(() => {
-          const { id } = productsMock
-          req.params = { id };
-
-          res.status = sinon.stub().returns(res);
-          res.json = sinon.stub().returns();
-
-          sinon.stub(productsServices, 'findProductsById').resolves(productsMock)
-        });
-
-        afterEach(() => {
-          productsServices.findProductsById.restore();
-        });
-
-        it('deve chamar `res.status` com o valor de 200', async () => {
-          await productsController.findProductsById(req, res);
-          expect(res.status.calledWith(200)).to.be.true;
-        });
-
-        it('deve chamar `res.jason` com o objeto cadastrado', async () => {
-          await productsController.findProductsById(req, res);
-          expect(res.json.calledWith(productsMock)).to.be.true;
-        });
-      })
-
-      describe("#updateProductsById", () => {
-        const req = {};
-        const res = {};
-        
-        beforeEach(() => {
-          const { id } = productsMock
-          const { name, quantity } = productsMock
-          req.params = { id };
-          req.body = { name, quantity };
-
-          res.status = sinon.stub().returns(res);
-          res.json = sinon.stub().returns();
-
-          sinon.stub(productsServices, 'updateProductsById').resolves(productsMock)
-        });
-
-        afterEach(() => {
-          productsServices.updateProductsById.restore();
-        });
-
-        it('deve chamar `res.status` com o valor de 200', async () => {
-          await productsController.updateProductsById(req, res);
-          expect(res.status.calledWith(200)).to.be.true;
-        });
-
-        it('deve chamar `res.jason` com o objeto cadastrado', async () => {
-          await productsController.updateProductsById(req, res);
-          expect(res.json.calledWith(productsMock)).to.be.true;
-        });
-      })
+    after(() => {
+      productsServices.getProductsServices.restore();
     });
+
+    it('é chamado o método "status" passando o código 200', async () => {
+        await productsController.getProductsControler(request, response)
+
+      expect(response.status.calledWith(200)).to.be.equal(true);
+    });
+
+    it('é chamado o método "json" passando um array', async () => {
+        await productsController.getProductsControler(request, response)
+
+      expect(response.json.calledWith(sinon.match.array)).to.be.equal(true);
+    });
+  });
+})
+
+describe('Chamada do controller getProductsIdControler', () => {
+    describe('Quando existem produtos no banco com o ID informado', () => {
+      const response = {}
+      const request = {}
+      const productsMock = [
+        {
+          id: '1',
+          name: 'Martelo de Thor',
+          quantity: 10,
+        }
+        ]
+      before(() => {
+        request.params = {id: 20}
+        response.status = sinon.stub().returns(response);
+        response.json = sinon.stub().returns();
+
+        sinon.stub(productsServices, 'getProductsByIdServices').resolves(productsMock);
+      })
+
+      after(() => {
+        productsServices.getProductsByIdServices.restore();
+      })
+
+      it('é retornado o metodo "status" passando o codigo 200', async () => {
+        await productsController.getProductsIdControler(request, response)
+
+        expect(response.status.calledWith(200)).to.be.equal(true);
+      })
+
+      it('é retornado o metodo json contendo um objeto', async () => {
+        await productsController.getProductsIdControler(request, response)
+
+        expect(response.json.calledWith(sinon.match.object)).to.be.equal(true);
+      })
+    })
+    describe('quando cai catch', async () => {
+      const objErrorNotFound = {
+        error: 404,
+        message: 'Product not found',
+    };
+      const response = {};
+      const request = {};
+      request.params = {id: 20}
+
+      before(() => {
+        response.status = sinon.stub()
+          .returns(response);
+        response.json = sinon.stub()
+          .returns();
+
+        sinon.stub(productsServices, 'getProductsByIdServices')
+          .resolves(objErrorNotFound);
+      })
+
+      after(() => {
+        productsServices.getProductsByIdServices.restore();
+      });
+
+      it('é chamado o método "status" passando o código 500', async () => {
+        try{
+        await productsController.getProductsIdControler(request, response)
+        } catch(err) {
+        expect(response.err).to.be.equal(500);
+        }
+      });
+      it('é chamado o método "json" passando uma messagem Product not found', async () => {
+        try {
+        await productsController.getProductsIdControler(request, response)
+        } catch (err) {
+          expect(err.message).to.be.equal('Product not found');
+        }
+      });
+    });
+  });
+  describe('Chamada do controller registerProduct', () => {
+    describe('Quando o register ocorre com sucesso', () => {
+      const response = {}
+      const request = {}
+
+      before(() => {
+        request.body = {
+          name: "pc gamer ultra mega power",
+	       	quantity: 10
+        };
+        response.status = sinon.stub().returns(response);
+        response.json = sinon.stub().returns();
+
+        sinon.stub(productsServices, 'validCreate').resolves(true);
+      })
+
+      after(() => {
+        productsServices.validCreate.restore();
+      })
+
+      it('é retornado o metodo "status" passando o codigo 201', async () => {
+        await productsController.registerProduct(request, response)
+
+        expect(response.status.calledWith(201)).to.be.equal(true);
+      })
+
+      it('é retornado o metodo json contendo um objeto', async () => {
+        await productsController.registerProduct(request, response)
+
+        expect(response.json.calledWith(sinon.match.object)).to.be.equal(true);
+      })
+    })
+    describe('quando cai catch', async () => {
+
+      const response = {};
+      const request = {};
+      request.params = {id: 20}
+
+      before(() => {
+        response.status = sinon.stub()
+          .returns(response);
+        response.json = sinon.stub()
+          .returns();
+
+        sinon.stub(productsServices, 'validCreate')
+          .resolves([[]]);
+      })
+
+      after(() => {
+        productsServices.validCreate.restore();
+      });
+
+      it('é chamado o método "status" passando o código 500', async () => {
+        try{
+        await productsController.registerProduct(request, response)
+        } catch(err) {
+        expect(response.err).to.be.equal(500);
+        }
+      });
+      it('é chamado o método "json" passando uma messagem sales not found', async () => {
+        try {
+        await productsController.registerProduct(request, response)
+        } catch (err) {
+          expect(err.message).to.be.equal('Product not found');
+        }
+      });
+    });
+  });
+  describe('Chamada do controller updateProduct', () => {
+    describe('Quando a atualização ocorre com sucesso', () => {
+      const response = {}
+      const request = {}
+      before(() => {
+        request.params = {id: 2};
+        request.body = {
+          name: "pc gamer ultra mega power",
+	       	quantity: 10
+        };
+        response.status = sinon.stub().returns(response);
+        response.json = sinon.stub().returns();
+
+        sinon.stub(productsServices, 'validUpdate').resolves(true);
+      })
+
+      after(() => {
+        productsServices.validUpdate.restore();
+      })
+
+      it('é retornado o metodo "status" passando o codigo 200', async () => {
+        await productsController.updateProduct(request, response)
+
+        expect(response.status.calledWith(200)).to.be.equal(true);
+      })
+    })
+    describe('quando cai catch', async () => {
+      const response = {};
+      const request = {};
+      request.params = {id: 20}
+
+      before(() => {
+        response.status = sinon.stub()
+          .returns(response);
+        response.json = sinon.stub()
+          .returns();
+
+        sinon.stub(productsServices, 'validUpdate')
+          .resolves([[]]);
+      })
+
+      after(() => {
+        productsServices.validUpdate.restore();
+      });
+
+      it('é chamado o método "status" passando o código 500', async () => {
+        try{
+        await productsController.updateProduct(request, response)
+        } catch(err) {
+        expect(response.err).to.be.equal(500);
+        }
+      });
+      it('é chamado o método "json" passando uma messagem sales not found', async () => {
+        try {
+        await productsController.updateProduct(request, response)
+        } catch (err) {
+          expect(err.message).to.be.equal('Product not found');
+        }
+      });
+    });
+  });
+  describe('Chamada do controller deleteProduct', () => {
+    describe('Quando a atualização ocorre com sucesso', () => {
+      const response = {}
+      const request = {}
+      before(() => {
+        request.params = {id: 2};
+        response.status = sinon.stub().returns(response);
+        response.json = sinon.stub().returns();
+
+        sinon.stub(productsServices, 'validDelete').resolves(true);
+      })
+
+      after(() => {
+        productsServices.validDelete.restore();
+      })
+
+      it('é retornado o metodo "status" passando o codigo 201', async () => {
+        await productsController.deleteProduct(request, response)
+
+        expect(response.status.calledWith(204)).to.be.equal(true);
+      })
+    })
   });
